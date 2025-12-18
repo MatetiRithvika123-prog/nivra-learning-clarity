@@ -1,54 +1,51 @@
-import os
 import streamlit as st
-from google import genai
 
-# Page setup
 st.set_page_config(
-    page_title="Nivra",
+    page_title="NIVRA",
     page_icon="🧠",
     layout="centered"
 )
 
-st.title("Nivra")
-st.caption("Clarity before confusion.")
-
-# Read API key from Streamlit Secrets
-api_key = os.environ.get("GEMINI_API_KEY")
-if not api_key:
-    st.error("GEMINI_API_KEY not found in Secrets.")
-    st.stop()
-
-# Create Gemini client
-client = genai.Client(api_key=api_key)
+st.title("NIVRA")
+st.caption("Clarity for curious minds.")
 
 topic = st.text_input(
-    "Enter any topic you're stuck with",
-    placeholder="e.g. Explain loops in Python"
+    "What topic are you confused about?",
+    placeholder="e.g. loops in Python"
 )
 
-if st.button("Get Clarity") and topic.strip():
-    with st.spinner("Bringing clarity..."):
-        try:
-            prompt = f"""
-You are Nivra, a learning clarity assistant.
+def generate_nivra_explanation(topic: str) -> str:
+    return f"""
+### 📘 Topic: {topic}
 
-Rules:
-- Start with a clear definition.
-- Explain step by step in simple, structured language.
-- If the topic is technical, include syntax and a small example.
-- If non-technical, explain in a mature, intuitive way.
-- End with a small next-step suggestion.
+**Definition**  
+{topic} is explained here in a clear and beginner-friendly way, focusing on what it means and why it exists.
 
-Topic:
-{topic}
+**Step-by-step explanation**
+1. What the concept is meant to do  
+2. How it works internally  
+3. When and why it is used  
+4. What happens if it is misunderstood  
+
+**If this is a technical topic**
+- Show the basic syntax
+- Explain each part of the syntax
+- Provide a simple example
+
+**If this is a non-technical topic**
+- Explain using an intuitive, real-world analogy
+- Avoid jargon
+- Focus on understanding rather than memorization
+
+**Common mistakes**
+- Misunderstanding the purpose
+- Skipping foundational ideas
+- Jumping ahead too quickly
+
+**Next step**
+Search for one simple example related to **{topic}** and try to explain it in your own words.
 """
-            response = client.models.generate_content(
-                model="models/gemini-2.0-flash",
-                contents=prompt
-            )
 
-            st.markdown(response.text)
-
-        except Exception as e:
-            st.error("Something went wrong.")
-            st.exception(e)
+if st.button("Get Clarity") and topic.strip():
+    explanation = generate_nivra_explanation(topic)
+    st.markdown(explanation)

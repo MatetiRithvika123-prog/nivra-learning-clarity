@@ -1,3 +1,2 @@
 streamlit
-google-genai>=0.5.0
-python-dotenv
+
