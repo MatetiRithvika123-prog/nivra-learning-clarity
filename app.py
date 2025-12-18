@@ -43,7 +43,7 @@ Topic:
 {topic}
 """
             response = client.models.generate_content(
-                model="models/gemini-pro-latest",
+                model="models/gemini-2.0-flash",
                 contents=prompt
             )
 
