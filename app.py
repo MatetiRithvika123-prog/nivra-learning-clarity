@@ -1,35 +1,57 @@
 import streamlit as st
 import google.generativeai as genai
+import os
 
 # Page config
-st.set_page_config(page_title="NIVRA", page_icon="🧠", layout="centered")
+st.set_page_config(
+    page_title="Nivra — Learning Clarity",
+    page_icon="🧠",
+    layout="centered"
+)
 
-st.title("NIVRA")
-st.caption("Clarity before confusion.")
+st.title("Nivra")
+st.subheader("Clarity for curious minds")
 
-# Gemini setup
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-pro")
+# Load API key
+api_key = os.getenv("GEMINI_API_KEY")
 
-SYSTEM_PROMPT = """
-You are NIVRA — a learning clarity assistant.
+if not api_key:
+    st.error("Gemini API key not found. Please add it in Secrets.")
+    st.stop()
+
+genai.configure(api_key=api_key)
+
+# IMPORTANT: correct model name
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# UI
+topic = st.text_input(
+    "Enter any topic you're confused about",
+    placeholder="e.g. What is computer networks?"
+)
+
+if st.button("Get Clarity"):
+    if not topic.strip():
+        st.warning("Please enter a topic.")
+    else:
+        with st.spinner("Thinking clearly..."):
+            try:
+                prompt = f"""
+Explain the following topic clearly and step by step.
 
 Rules:
-- Start with a clear definition.
-- Explain step-by-step in logical order.
-- For technical topics:
-  - Provide syntax in the appropriate programming language.
-  - Give a small working example.
-- For non-technical topics:
-  - Explain in a mature, intuitive way.
-- Use simple, calm, encouraging language.
-- End with a small "next step" suggestion.
+- Start with a clear definition
+- Use simple but correct technical language
+- If technical, include syntax and example
+- End with curiosity-driven next step
+
+Topic:
+{topic}
 """
+                response = model.generate_content(prompt)
+                st.success("Here’s the clarity:")
+                st.write(response.text)
 
-topic = st.text_input("Enter any topic you're confused about")
-
-if st.button("Get Clarity") and topic:
-    with st.spinner("Bringing clarity..."):
-        prompt = f"{SYSTEM_PROMPT}\n\nTopic: {topic}"
-        response = model.generate_content(prompt)
-        st.markdown(response.text)
+            except Exception as e:
+                st.error("Something went wrong.")
+                st.exception(e)
