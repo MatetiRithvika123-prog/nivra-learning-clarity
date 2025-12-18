@@ -22,7 +22,8 @@ if not api_key:
 genai.configure(api_key=api_key)
 
 # IMPORTANT: correct model name
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
+model = genai.GenerativeModel("gemini-pro")
+
 
 
 # UI
