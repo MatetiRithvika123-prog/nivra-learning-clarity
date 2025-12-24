@@ -1,8 +1,8 @@
-import os
 import streamlit as st
-from google import genai
 
-# Page setup
+# -------------------------------
+# Page Configuration
+# -------------------------------
 st.set_page_config(
     page_title="Nivra",
     page_icon="🧠",
@@ -12,43 +12,36 @@ st.set_page_config(
 st.title("Nivra")
 st.caption("Clarity before confusion.")
 
-# Read API key from Streamlit Secrets
-api_key = os.environ.get("GEMINI_API_KEY")
-if not api_key:
-    st.error("GEMINI_API_KEY not found in Secrets.")
-    st.stop()
+# -------------------------------
+# Helper Logic (Intelligence)
+# -------------------------------
+TECH_KEYWORDS = [
+    "programming", "code", "class", "object", "loop", "variable",
+    "algorithm", "data", "network", "python", "java", "c++", "db",
+    "function", "method", "array", "stack", "queue"
+]
 
-# Create Gemini client
-client = genai.Client(api_key=api_key)
+def is_technical(topic: str) -> bool:
+    topic = topic.lower()
+    return any(word in topic for word in TECH_KEYWORDS)
 
-topic = st.text_input(
-    "Enter any topic you're stuck with",
-    placeholder="e.g. Explain loops in Python"
-)
+def generate_clarity(topic: str) -> str:
+    if is_technical(topic):
+        return f"""
+### 📘 Topic: {topic}
 
-if st.button("Get Clarity") and topic.strip():
-    with st.spinner("Bringing clarity..."):
-        try:
-            prompt = f"""
-You are Nivra, a learning clarity assistant.
+#### **Definition**
+{topic.capitalize()} is a concept used in computer science to help programs stay flexible, reusable, and easier to understand as they grow.
 
-Rules:
-- Start with a clear definition.
-- Explain step by step in simple, structured language.
-- If the topic is technical, include syntax and a small example.
-- If non-technical, explain in a mature, intuitive way.
-- End with a small next-step suggestion.
+#### **Step-by-step explanation**
+1. It exists to avoid repeating similar logic.
+2. It allows the same idea to behave differently based on context.
+3. This makes programs easier to extend and maintain.
+4. Misunderstanding it often leads to rigid or confusing code.
 
-Topic:
-{topic}
-"""
-            response = client.models.generate_content(
-                model="models/gemini-2.0-flash",
-                contents=prompt
-            )
+#### **Basic syntax (example in Python)**
 
-            st.markdown(response.text)
-
-        except Exception as e:
-            st.error("Something went wrong.")
-            st.exception(e)
+```python
+class Example:
+    def action(self):
+        print("Doing something")
